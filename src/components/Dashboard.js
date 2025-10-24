@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { dashboardAPI, authAPI } from '../services/api';
+import { dashboardAPI } from '../services/api';
 import './styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -123,29 +123,6 @@ const Dashboard = () => {
               ) : (
                 <p>No recent activity</p>
               )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="dashboard-section">
-            <h2>Quick Actions</h2>
-            <div className="actions-grid">
-              <button className="action-btn">
-                <span className="action-icon">➕</span>
-                Create New Test
-              </button>
-              <button className="action-btn">
-                <span className="action-icon">📊</span>
-                View Reports
-              </button>
-              <button className="action-btn">
-                <span className="action-icon">👥</span>
-                Manage Team
-              </button>
-              <button className="action-btn">
-                <span className="action-icon">⚙️</span>
-                Settings
-              </button>
             </div>
           </div>
         </div>
