@@ -140,4 +140,71 @@ router.get('/profile', auth, async (req, res) => {
   }
 });
 
+// Update user 
+router.put('/profile', auth, async (req, res) => {
+  try {
+    const updates = req.body;
+
+    // อัปเดตเฉพาะ field ที่อนุญาต เช่น fullName, email, password
+    const allowedFields = ['fullName', 'email', 'password'];
+    const updateData = {};
+
+    for (let key of allowedFields) {
+      if (updates[key]) updateData[key] = updates[key];
+    }
+
+    if (updateData.password) {
+      const bcrypt = require('bcryptjs');
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate(req.user._id, updateData, {
+      new: true,
+      runValidators: true,
+    }).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'ไม่พบผู้ใช้' });
+    }
+
+    res.json({
+      success: true,
+      message: 'อัปเดตข้อมูลผู้ใช้สำเร็จ',
+      user,
+    });
+  } catch (error) {
+    console.error('Update error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'เกิดข้อผิดพลาดในการอัปเดตข้อมูล',
+      error: error.message,
+    });
+  }
+});
+
+// Delete user 
+router.delete('/profile', auth, async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'ไม่พบผู้ใช้' });
+    }
+
+    res.json({
+      success: true,
+      message: 'ลบบัญชีผู้ใช้สำเร็จ',
+    });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'เกิดข้อผิดพลาดในการลบบัญชีผู้ใช้',
+      error: error.message,
+    });
+  }
+});
+
+
 module.exports = router;
